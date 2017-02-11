@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
+
+{% block content %}
 
 <html>
     <head>
@@ -59,16 +61,16 @@
     </style>
 
         <body>
-            <h1>Build-A-Blog</h1>
+            <h1>Add a post</h1>
 
             <form method = 'post'>
                 <label>
-                    <div> Blog Title </div>
+                    <div> Title </div>
                     <input type='text' name='title' value='{{ title }}'>
                 </label>
 
                 <label>
-                    <div>Blog Post</div>
+                    <div>Post</div>
                     <textarea name="blog">{{ blog }}</textarea>
                 </label>
 
@@ -79,3 +81,5 @@
 
         </body>
 </html>
+
+{% endblock %}
