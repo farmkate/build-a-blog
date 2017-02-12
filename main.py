@@ -31,21 +31,9 @@ class MainPage(Handler):
     def get(self):
         self.render_main()
 
-    # def post(self):
-    #     title = self.request.get('title')
-    #     blog_post = self.request.get('blog_post')
-
-    #     if title and blog_post:
-    #         a = Blog(title = title, blog_post = blog_post)
-    #         a.put()
-    #         self.redirect('/blog')
-    #     else:
-    #         error = 'we need both a title and something to post!'
-    #         self.render_main(title, blog_post, error)
 
 class NewPostHandler(Handler):
     def render_add(self, title, blog_post, error):
-        blog_posts = db.GqlQuery('SELECT * FROM Blog ORDER BY created DESC LIMIT 5')
         self.render('add.html', title=title, blog_post=blog_post, error=error)
 
     def get(self):
@@ -58,12 +46,20 @@ class NewPostHandler(Handler):
         if title and blog_post:
             a = Blog(title = title, blog_post = blog_post)
             a.put()
-            self.redirect('/blog')
+            id = a.key().id()
+            self.redirect('/blog/' + str(id))
         else:
             error = 'We need both a title and something to post!'
             self.render_add(title, blog_post, error)
-        
+
+
+class ViewPostHandler(Handler):
+    def get(self, id):
+        single = Blog.get_by_id( int(id) )
+        self.render('blog.html', single_post = single)
+
+  
 
 app = webapp2.WSGIApplication(
-    [('/blog', MainPage), ('/blog/newpost', NewPostHandler)
+    [('/blog', MainPage), ('/blog/newpost', NewPostHandler), webapp2.Route('/blog/<id:\d+>', handler = ViewPostHandler)
 ], debug=True)

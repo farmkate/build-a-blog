@@ -7,16 +7,21 @@
             <h2>Blog Posts</h2>
         </head>
         <body>
-
-            {% for blog_post in blog %}
+            {% if single_post %}
                 <div class='blog'>
-                 
-                    <div class='blog-title'>Title:  {{ blog_post.title }}</div>
-                    <pre class='blog-body'>{{ blog_post.blog_post }}<br><br>Created on:  {{ blog_post.created }}</pre>
+                    <div class='blog-title'>Title:  {{ single_post.title }}</div>
+                    <pre class='blog-body'>{{ single_post.blog_post }}<br><br>Created on:  {{ single_post.created }}</pre>
                     <hr>
                 </div> 
-            {% endfor %}
-
+            {% else %}
+                {% for blog_post in blog %}
+                    <div class='blog'>
+                        <div class='blog-title'>Title:  <a href='/blog/{{blog_post.key().id()}}'>{{ blog_post.title }} </a></div>
+                        <pre class='blog-body'>{{ blog_post.blog_post }}<br><br>Created on:  {{ blog_post.created }}</pre>
+                        <hr>
+                    </div> 
+                {% endfor %}
+            {% endif %}
         </body>
 </html>
 
