@@ -20,56 +20,29 @@ class Handler(webapp2.RequestHandler):
 
 class Blog(db.Model):
     title = db.StringProperty(required = True)
-    blog = db.TextProperty(required = True)
+    blog_post = db.TextProperty(required = True)
     created = db.DateTimeProperty(auto_now_add = True)
 
 class MainPage(Handler):
-    def render_main(self, title, blog, error):
-        blogs = db.GqlQuery('SELECT * FROM Blog ORDER BY created DESC LIMIT 5')
-        self.render('main.html', title=title, blog=blog, error=error, blogs=blogs)
+    def render_main(self, title, blog_post, error):
+        blog_posts = db.GqlQuery('SELECT * FROM Blog ORDER BY created DESC LIMIT 5')
+        self.render('blog.html', title=title, blog_post=blog_post, error=error, blog=blog_posts)
 
     def get(self):
-        self.render_main(title='', blog='', error='')
+        self.render_main(title='', blog_post='', error='')
 
     def post(self):
         title = self.request.get('title')
-        blog = self.request.get('blog')
+        blog_post = self.request.get('blog_post')
 
-        if title and blog:
-            b = Blog(title = title, blog = blog)
-            b.put()
-            self.redirect('/')
+        if title and blog_post:
+            a = Blog(title = title, blog_post = blog_post)
+            a.put()
+            self.redirect('/blog')
         else:
             error = 'we need both a title and something to post!'
-            self.render_main(title, blog, error)
+            self.render_main(title, blog_post, error)
 
-
-class ViewPostHandler(Handler):
-    def get(self, id):
-        #self.request.get('id')
-        if id:
-            post = Blog.get_by_id(int(id))
-            self.render_view('view.html, 
-
-    def render_view(self, title, blog, error):
-         blogs = db.GqlQuery('SELECT * FROM Blog ORDER BY created DESC LIMIT 5')
-         self.render('view.html', blogs=blogs)
-
-        
-        if id:
-            self.render
-        post = Blog.get_by_id(int(id))
-        self.render('view.html', post=post)
-
-
-# class ViewBlogHandler(Handler):
-#     def render_view(self, title, blog, error):
-#         blogs = db.GqlQuery('SELECT * FROM Blog ORDER BY created DESC LIMIT 5')
-#         self.render('view.html', blogs=blogs)
-
-#     def get(self):
-#         self.render('/blog', blogs=blogs)
-
-app = webapp2.Route(
-    [('/', MainPage), ('/blog<id:/d+>', ViewPostHandler)#, ('/blog<id:/d+>', ViewBlogHandler), ('/new', NewPostHandler)
+app = webapp2.WSGIApplication(
+    [('/blog', MainPage)#, ('/blog/newpost', NewPostHandler)
 ], debug=True)
