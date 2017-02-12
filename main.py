@@ -24,12 +24,32 @@ class Blog(db.Model):
     created = db.DateTimeProperty(auto_now_add = True)
 
 class MainPage(Handler):
-    def render_main(self, title, blog_post, error):
+    def render_main(self):
         blog_posts = db.GqlQuery('SELECT * FROM Blog ORDER BY created DESC LIMIT 5')
-        self.render('blog.html', title=title, blog_post=blog_post, error=error, blog=blog_posts)
+        self.render('blog.html', blog=blog_posts)
 
     def get(self):
-        self.render_main(title='', blog_post='', error='')
+        self.render_main()
+
+    # def post(self):
+    #     title = self.request.get('title')
+    #     blog_post = self.request.get('blog_post')
+
+    #     if title and blog_post:
+    #         a = Blog(title = title, blog_post = blog_post)
+    #         a.put()
+    #         self.redirect('/blog')
+    #     else:
+    #         error = 'we need both a title and something to post!'
+    #         self.render_main(title, blog_post, error)
+
+class NewPostHandler(Handler):
+    def render_add(self, title, blog_post, error):
+        blog_posts = db.GqlQuery('SELECT * FROM Blog ORDER BY created DESC LIMIT 5')
+        self.render('add.html', title=title, blog_post=blog_post, error=error)
+
+    def get(self):
+        self.render_add(title='', blog_post='', error='')
 
     def post(self):
         title = self.request.get('title')
@@ -40,9 +60,10 @@ class MainPage(Handler):
             a.put()
             self.redirect('/blog')
         else:
-            error = 'we need both a title and something to post!'
-            self.render_main(title, blog_post, error)
+            error = 'We need both a title and something to post!'
+            self.render_add(title, blog_post, error)
+        
 
 app = webapp2.WSGIApplication(
-    [('/blog', MainPage)#, ('/blog/newpost', NewPostHandler)
+    [('/blog', MainPage), ('/blog/newpost', NewPostHandler)
 ], debug=True)
